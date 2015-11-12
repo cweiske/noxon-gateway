@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="iso-8859-1" standalone="yes" ?>
+<ListOfItems>
+  <ItemCount>-1</ItemCount>
+  <Item>
+    <ItemType>Dir</ItemType>
+    <Title>Hallo!</Title>
+    <UrlDir>http://radio567.vtuner.com/test</UrlDir>
+    <UrlDirBackUp>http://radio5672.vtuner.com/test</UrlDirBackUp>
+  </Item>
+</ListOfItems>
