@@ -1,45 +1,28 @@
 <?php
-function sendPodcastList()
+function sendPodcast($path)
 {
-    $files = glob(__DIR__ . '/../var/podcasts/*.url');
-    if (count($files) == 0) {
-        sendMessage('Keine Podcasts');
-        return;
-    }
+    global $varDir, $host1;
 
-    $listItems = array();
-    foreach ($files as $file) {
-        $title = basename($file, '.url');
-        $listItems[] = '<Item>'
-            . '<ItemType>ShowOnDemand</ItemType>'
-            . '<ShowOnDemandName>' . htmlspecialchars($title) . '</ShowOnDemandName>'
-            . '<ShowOnDemandURL>http://radio567.vtuner.com/podcasts/' . urlencode(basename($file)) . '</ShowOnDemandURL>'
-            . '</Item>';
-    }
-    sendListItems($listItems);
-}
-
-function sendPodcast($file)
-{
-    //strip /podcasts/
-    $file = substr(urldecode($file), 10);
+    $file = urldecode($path);
     if (strpos($file, '..') !== false) {
         sendMessage('No');
         return;
     }
 
-    $path = __DIR__ . '/../var/podcasts/' . $file;
-    if (!file_exists($path)) {
-        return sendMessage('File does not exist: ' . $file);
+    $fullPath = $varDir . $path;
+    if (!file_exists($fullPath)) {
+        return sendMessage('File does not exist: ' . $path);
     }
 
-    $url = trim(file_get_contents($path));
+    $url = trim(file_get_contents($fullPath));
 
-    $cacheFile = '/tmp/podcast-' . md5($file) . '.xml';
+    $cacheFile = '/tmp/podcast-' . md5($path) . '.xml';
     downloadIfNewer($url, $cacheFile);
     
     $sx = simplexml_load_file($cacheFile);
     $listItems = array();
+    addPreviousItem($listItems, $path);
+
     foreach ($sx->channel->item as $item) {
         $title = (string) $item->title;
         $desc = (string) $item->description;
@@ -48,8 +31,7 @@ function sendPodcast($file)
         $listItems[] = '<Item>'
             . '<ItemType>ShowEpisode</ItemType>'
             . '<ShowEpisodeName>' . utf8_decode(htmlspecialchars($title)) . '</ShowEpisodeName>'
-            . '<ShowEpisodeURL>http://radio567.vtuner.com/play-url?url=' . urlencode($url) . '</ShowEpisodeURL>'
-            //. '<ShowEpisodeURL>' . htmlspecialchars($url) . '</ShowEpisodeURL>'
+            . '<ShowEpisodeURL>' . $host1 . 'play-url?url=' . urlencode($url) . '</ShowEpisodeURL>'
             . '<ShowDesc>' . utf8_decode(htmlspecialchars($desc)) . '</ShowDesc>'
             . '<ShowMime>MP3</ShowMime>' 
             . '</Item>';

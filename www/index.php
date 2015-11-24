@@ -1,8 +1,19 @@
 <?php
 set_include_path(get_include_path() . PATH_SEPARATOR . __DIR__ . '/../src/');
 $fullUri = $_SERVER['REQUEST_URI'];
-$path    = $_SERVER['REDIRECT_URL'];
+if (isset($_SERVER['REDIRECT_URL'])) {
+    $path    = $_SERVER['REDIRECT_URL'];
+} else {
+    $path = '/';
+}
 $dataDir = __DIR__ . '/../data/';
+$varDir  = realpath(__DIR__ . '/../var') . '/';
+$host1 = 'http://radio567.vtuner.com/';
+$host2 = 'http://radio5672.vtuner.com/';
+if ($_SERVER['HTTP_HOST'] !== '') {
+    $host1 = 'http://' . $_SERVER['HTTP_HOST'] . '/';
+    $host2 = 'http://' . $_SERVER['HTTP_HOST'] . '/';
+}
 
 if (strtolower($fullUri) == '/setupapp/radio567/asp/browsexpa/loginxml.asp?token=0') {
     //initial login for "internet radio" and podcasts
@@ -18,23 +29,13 @@ if (strtolower($fullUri) == '/setupapp/radio567/asp/browsexpa/loginxml.asp?token
     exit();
 } else if ($path == '/setupapp/radio567/asp/BrowseXPA/LoginXML.asp') {
     //"Internet Radio"
-    header('Content-type: text/xml');
-    sendList('internetradio');
-    exit();
+    $path = '/internetradio';
 } else if ($path == '/setupapp/radio567/asp/BrowseXPA/navXML.asp') {
     //"Podcasts"
-    require_once 'podcasts.php';
-    sendPodcastList();
-    exit();
-} else if (substr($path, 0, 9) == '/podcasts') {
-    require_once 'podcasts.php';
-    sendPodcast($path);
-    exit();    
+    $path = '/podcasts';
 } else if ($path == '/RadioNative.php') {
     //"My Noxon"
-    header('Content-type: text/xml');
-    sendList('mynoxon');
-    exit();
+    $path = '/mynoxon';
 } else if ($path == '/setupapp/radio567/asp/BrowseXML/FavXML.asp') {
     //Internet Radio Station favorites favorited on device
 } else if ($path == '/RadioNativeFavorites.php') {
@@ -47,10 +48,134 @@ if (strtolower($fullUri) == '/setupapp/radio567/asp/browsexpa/loginxml.asp?token
     header('HTTP/1.0 301 Moved Permanently');
     header('Location: ' . getFinalUrl($url));
     exit();
-} else {
-    sendList(ltrim($path, '/'));
 }
 
+handleRequest(ltrim($path, '/'));
+
+function handleRequest($path)
+{
+    global $varDir;
+    if (strpos($path, '..') !== false) {
+        sendMessage('No');
+        return;
+    }
+
+    $fullPath = $varDir . $path;
+    if (!file_exists($fullPath)) {
+        sendMessage('Not found: ' . $path);
+        return;
+    }
+
+    if (is_dir($fullPath)) {
+        sendDir($path);
+    } else if (substr($path, -4) == '.url') {
+        require_once 'podcasts.php';
+        sendPodcast($path);
+    } else if (substr($path, -4) == '.txt') {
+        sendTextFile($path);
+    } else {
+        sendMessage('Unknown file type');
+    }
+}
+
+function sendDir($path)
+{
+    global $varDir;
+
+    $listItems = array();
+    addPreviousItem($listItems, $path);
+
+    $entries = glob(str_replace('//', '/', $varDir . rtrim($path, '/') . '/*'));
+    $count = 0;
+    foreach ($entries as $entry) {
+        $urlPath = substr($entry, strlen($varDir));
+        if (is_dir($entry)) {
+            ++$count;
+            $listItems[] = getDirItem(basename($entry), $urlPath . '/');
+        } else if (substr($entry, -4) == '.url') {
+            //podcast
+            ++$count;
+            $listItems[] = getPodcastItem(basename($entry, '.url'), $urlPath);
+        } else if (substr($entry, -4) == '.txt') {
+            //plain text file
+            ++$count;
+            $listItems[] = getDirItem(basename($entry, '.txt'), $urlPath);
+        }
+    }
+    if (!$count) {
+        $listItems[] = getMessageItem('No files or folders');
+    }
+    sendListItems($listItems);
+}
+
+function sendTextFile($path)
+{
+    global $varDir;
+    $listItems = array();
+    addPreviousItem($listItems, $path);
+
+    $lines = file($varDir . $path);
+    foreach ($lines as $line) {
+        $listItems[] = getDisplayItem($line);
+    }
+    sendListItems($listItems);
+}
+
+function getDisplayItem($line)
+{
+    return '<Item>'
+        . '<ItemType>Display</ItemType>'
+        . '<Display>' . utf8_decode(htmlspecialchars(trim($line))) . '</Display>'
+        . '</Item>';
+}
+
+function getDirItem($title, $urlPath)
+{
+    global $host1, $host2;
+    return '<Item>'
+        . '<ItemType>Dir</ItemType>'
+        . '<Title>' . utf8_decode(htmlspecialchars($title)) . '</Title>'
+        . '<UrlDir>' . $host1 . utf8_decode(htmlspecialchars($urlPath)) . '</UrlDir>'
+        . '<UrlDirBackUp>' . $host2 . utf8_decode(htmlspecialchars($urlPath)) . '</UrlDirBackUp>'
+        . '</Item>';
+}
+
+function getPodcastItem($title, $urlPath)
+{
+    global $host1;
+    return '<Item>'
+        . '<ItemType>ShowOnDemand</ItemType>'
+        . '<ShowOnDemandName>' . utf8_decode(htmlspecialchars($title)) . '</ShowOnDemandName>'
+        . '<ShowOnDemandURL>' . $host1 . utf8_decode(htmlspecialchars($urlPath)) . '</ShowOnDemandURL>'
+        . '</Item>';
+}
+
+function getMessageItem($msg)
+{
+    return '<Item>'
+        . '<ItemType>Message</ItemType>'
+        . '<Message>' . utf8_decode(htmlspecialchars($msg)) . '</Message>'
+        . '</Item>';
+}
+
+function getPreviousItem($urlPath)
+{
+    global $host1, $host2;
+    return '<Item>'
+        . '<ItemType>Previous</ItemType>'
+        . '<UrlPrevious>' . $host1 . utf8_decode(htmlspecialchars($urlPath)) . '</UrlPrevious>'
+        . '<UrlPreviousBackUp>' . $host1 . utf8_decode(htmlspecialchars($urlPath)) . '</UrlPreviousBackUp>'
+        . '</Item>';
+}
+
+function addPreviousItem(&$listItems, $urlPath)
+{
+    $parentDir = dirname($urlPath) . '/';
+    if ($parentDir == '/') {
+        return;
+    }
+    $listItems[] = getPreviousItem($parentDir);
+}
 
 function getFinalUrl($url)
 {
@@ -65,8 +190,12 @@ function getFinalUrl($url)
     return $url;
 }
 
+function sendMessage($msg)
+{
+    sendListItems(array(getMessageItem($msg)));
+}
 
-function sendList($path)
+function sendListItems($listItems)
 {
     $startitems = 1;
     $enditems = 10;
@@ -76,54 +205,17 @@ function sendList($path)
     if (isset($_GET['enditems'])) {
         $enditems = (int) $_GET['enditems'];
     }
+    //TODO: limit list
 
-    header('Content-type: text/xml');
-    echo <<<XML
-<?xml version="1.0" encoding="iso-8859-1" standalone="yes" ?>
-<ListOfItems>
-  <ItemCount>-1</ItemCount>
-  <Item>
-    <ItemType>Message</ItemType>
-    <Message>$path</Message>
-  </Item>
-  <Item>
-    <ItemType>Dir</ItemType>
-    <Title>$path</Title>
-    <UrlDir>http://radio567.vtuner.com/$path</UrlDir>
-    <UrlDirBackUp>http://radio5672.vtuner.com/$path</UrlDirBackUp>
-  </Item>
-</ListOfItems>
-
-XML;
-}
-
-function sendMessage($msg)
-{
-    header('Content-type: text/xml');
-    $xMsg = htmlspecialchars($msg);
-    echo <<<XML
-<?xml version="1.0" encoding="iso-8859-1" standalone="yes" ?>
-<ListOfItems>
-  <Item>
-    <ItemType>Message</ItemType>
-    <Message>$xMsg</Message>
-  </Item>
-</ListOfItems>
-
-XML;
-}
-
-function sendListItems($listItems)
-{
     $xml = '<?xml version="1.0" encoding="iso-8859-1"?>' . "\n";
+    $xml .= '<?xml-stylesheet type="text/xsl" href="/html.xsl"?>' . "\n";
     $xml .= '<ListOfItems>' . "\n";
     foreach ($listItems as $item) {
         $xml .= $item . "\n";
     }
     $xml .= "</ListOfItems>\n";
-    
+
     header('Content-type: text/xml');
     echo $xml;
 }
-
 ?>
