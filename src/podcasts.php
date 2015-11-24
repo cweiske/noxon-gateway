@@ -28,13 +28,12 @@ function sendPodcast($path)
         $desc = (string) $item->description;
         $url = $item->enclosure['url'];
 
-        $listItems[] = '<Item>'
-            . '<ItemType>ShowEpisode</ItemType>'
-            . '<ShowEpisodeName>' . utf8_decode(htmlspecialchars($title)) . '</ShowEpisodeName>'
-            . '<ShowEpisodeURL>' . $host1 . 'play-url?url=' . urlencode($url) . '</ShowEpisodeURL>'
-            . '<ShowDesc>' . utf8_decode(htmlspecialchars($desc)) . '</ShowDesc>'
-            . '<ShowMime>MP3</ShowMime>' 
-            . '</Item>';
+        $listItems[] = getEpisodeItem(
+            $title,
+            $host1 . 'play-url?url=' . urlencode($url),
+            $desc,
+            'MP3'
+        );
     }
     sendListItems($listItems);
 }

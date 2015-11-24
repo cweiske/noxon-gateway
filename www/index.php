@@ -14,6 +14,10 @@ if ($_SERVER['HTTP_HOST'] !== '') {
     $host1 = 'http://' . $_SERVER['HTTP_HOST'] . '/';
     $host2 = 'http://' . $_SERVER['HTTP_HOST'] . '/';
 }
+$cfgFile = $dataDir . 'config.php';
+if (file_exists($cfgFile)) {
+    include $cfgFile;
+}
 
 if (strtolower($fullUri) == '/setupapp/radio567/asp/browsexpa/loginxml.asp?token=0') {
     //initial login for "internet radio" and podcasts
@@ -29,17 +33,19 @@ if (strtolower($fullUri) == '/setupapp/radio567/asp/browsexpa/loginxml.asp?token
     exit();
 } else if ($path == '/setupapp/radio567/asp/BrowseXPA/LoginXML.asp') {
     //"Internet Radio"
-    $path = '/internetradio';
+    $path = '/internetradio/';
 } else if ($path == '/setupapp/radio567/asp/BrowseXPA/navXML.asp') {
     //"Podcasts"
-    $path = '/podcasts';
+    $path = '/podcasts/';
 } else if ($path == '/RadioNative.php') {
     //"My Noxon"
-    $path = '/mynoxon';
+    $path = '/mynoxon/';
 } else if ($path == '/setupapp/radio567/asp/BrowseXML/FavXML.asp') {
     //Internet Radio Station favorites favorited on device
+    sendMessage('Unsupported');
 } else if ($path == '/RadioNativeFavorites.php') {
     //Favorites, defined via web interface
+    sendMessage('Unsupported');
 } else if (substr($path, 0, 9) == '/play-url') {
     //play a given URL, but first follow all redirects
     //noxon iRadio Cube does not like too many redirections
@@ -59,6 +65,13 @@ function handleRequest($path)
         sendMessage('No');
         return;
     }
+
+    if (substr($path, 0, 14) == 'internetradio/') {
+        require_once 'mediatomb.php';
+        handleRequestMediatomb($path, 'internetradio/');
+        return;
+    }
+
 
     $fullPath = $varDir . $path;
     if (!file_exists($fullPath)) {
@@ -137,6 +150,17 @@ function getDirItem($title, $urlPath)
         . '<Title>' . utf8_decode(htmlspecialchars($title)) . '</Title>'
         . '<UrlDir>' . $host1 . utf8_decode(htmlspecialchars($urlPath)) . '</UrlDir>'
         . '<UrlDirBackUp>' . $host2 . utf8_decode(htmlspecialchars($urlPath)) . '</UrlDirBackUp>'
+        . '</Item>';
+}
+
+function getEpisodeItem($title, $fullUrl, $desc, $type)
+{
+    return '<Item>'
+        . '<ItemType>ShowEpisode</ItemType>'
+        . '<ShowEpisodeName>' . utf8_decode(htmlspecialchars($title)) . '</ShowEpisodeName>'
+        . '<ShowEpisodeURL>' . $fullUrl . '</ShowEpisodeURL>'
+        . '<ShowDesc>' . utf8_decode(htmlspecialchars($desc)) . '</ShowDesc>'
+        . '<ShowMime>' . $type . '</ShowMime>'
         . '</Item>';
 }
 

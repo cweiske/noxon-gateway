@@ -1,0 +1,10 @@
+<?php
+//$host1 = 'http://example.org/';
+//$host2 = 'http://example.org/';
+$mediatomb = array(
+    'user' => 'fixme',
+    'pass' => 'fixme',
+    'host' => 'fixme',
+    'port' => '49152'
+);
+?>
