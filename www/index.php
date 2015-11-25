@@ -8,12 +8,14 @@ if (isset($_SERVER['REDIRECT_URL'])) {
 }
 $dataDir = __DIR__ . '/../data/';
 $varDir  = realpath(__DIR__ . '/../var') . '/';
+$cacheDir = __DIR__ . '/../www/cache/';
 $host1 = 'http://radio567.vtuner.com/';
 $host2 = 'http://radio5672.vtuner.com/';
 if ($_SERVER['HTTP_HOST'] !== '') {
     $host1 = 'http://' . $_SERVER['HTTP_HOST'] . '/';
     $host2 = 'http://' . $_SERVER['HTTP_HOST'] . '/';
 }
+$cacheDirUrl = $host1 . 'cache/';
 $cfgFile = $dataDir . 'config.php';
 if (file_exists($cfgFile)) {
     include $cfgFile;
@@ -41,6 +43,10 @@ if (strtolower($fullUri) == '/setupapp/radio567/asp/browsexpa/loginxml.asp?token
 } else if ($path == '/RadioNativeFavorites.php') {
     //Favorites, defined via web interface
     sendMessage('Unsupported');
+} else if ($path == '/transcode') {
+    require_once 'mediatomb.php';
+    transcodeMediatombItem($_GET['mtParentId'], $_GET['mtItemTitle']);
+    exit();
 }
 
 handleRequest(ltrim($path, '/'));
@@ -193,7 +199,7 @@ function getEpisodeItem($title, $fullUrl, $desc, $type)
     return '<Item>'
         . '<ItemType>ShowEpisode</ItemType>'
         . '<ShowEpisodeName>' . utf8_decode(htmlspecialchars($title)) . '</ShowEpisodeName>'
-        . '<ShowEpisodeURL>' . $fullUrl . '</ShowEpisodeURL>'
+        . '<ShowEpisodeURL>' . htmlspecialchars($fullUrl) . '</ShowEpisodeURL>'
         . '<ShowDesc>' . utf8_decode(htmlspecialchars($desc)) . '</ShowDesc>'
         . '<ShowMime>' . $type . '</ShowMime>'
         . '</Item>';
