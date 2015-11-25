@@ -19,17 +19,12 @@ if (file_exists($cfgFile)) {
     include $cfgFile;
 }
 
-if (strtolower($fullUri) == '/setupapp/radio567/asp/browsexpa/loginxml.asp?token=0') {
-    //initial login for "internet radio" and podcasts
-    //lowercase tags
+if (strtolower($fullUri) == '/setupapp/radio567/asp/browsexpa/loginxml.asp?token=0'
+    || $fullUri == '/RadioNativeLogin.php'
+) {
+    //initial login for "internet radio", podcasts and "my noxon"
     header('Content-type: text/html');
-    readfile($dataDir . 'initial-login.xml');
-    exit();
-} else if ($fullUri == '/RadioNativeLogin.php') {
-    //initial login for "My noxon"
-    //this one wants CamelCased tags
-    header('Content-type: text/html');
-    readfile($dataDir . 'login-mynoxon.xml');
+    readfile($dataDir . 'login-camelcase.xml');
     exit();
 } else if ($path == '/setupapp/radio567/asp/BrowseXPA/LoginXML.asp') {
     //"Internet Radio"
@@ -40,7 +35,6 @@ if (strtolower($fullUri) == '/setupapp/radio567/asp/browsexpa/loginxml.asp?token
 } else if ($path == '/RadioNative.php') {
     //"My Noxon"
     $path = '/mynoxon/';
-    $path = '/internetradio/';
 } else if ($path == '/setupapp/radio567/asp/BrowseXML/FavXML.asp') {
     //Internet Radio Station favorites favorited on device
     sendMessage('Unsupported');
