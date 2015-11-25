@@ -40,6 +40,7 @@ if (strtolower($fullUri) == '/setupapp/radio567/asp/browsexpa/loginxml.asp?token
 } else if ($path == '/RadioNative.php') {
     //"My Noxon"
     $path = '/mynoxon/';
+    $path = '/internetradio/';
 } else if ($path == '/setupapp/radio567/asp/BrowseXML/FavXML.asp') {
     //Internet Radio Station favorites favorited on device
     sendMessage('Unsupported');
@@ -91,6 +92,11 @@ function handleRequest($path)
     }
 }
 
+function pathEncode($urlPath)
+{
+    return str_replace('%2F', '/', rawurlencode($urlPath));
+}
+
 function sendDir($path)
 {
     global $varDir;
@@ -101,7 +107,7 @@ function sendDir($path)
     $entries = glob(str_replace('//', '/', $varDir . rtrim($path, '/') . '/*'));
     $count = 0;
     foreach ($entries as $entry) {
-        $urlPath = substr($entry, strlen($varDir));
+        $urlPath = pathEncode(substr($entry, strlen($varDir)));
         if (is_dir($entry)) {
             ++$count;
             $listItems[] = getDirItem(basename($entry), $urlPath . '/');
@@ -129,16 +135,20 @@ function sendTextFile($path)
 
     $lines = file($varDir . $path);
     foreach ($lines as $line) {
-        $listItems[] = getDisplayItem($line);
+        $line = trim($line);
+        if ($line != '') {
+            $listItems[] = getDisplayItem($line);
+        }
     }
     sendListItems($listItems);
 }
 
 function getDisplayItem($line)
 {
+    $line = preg_replace('#\s+#', ' ', $line);
     return '<Item>'
         . '<ItemType>Display</ItemType>'
-        . '<Display>' . utf8_decode(htmlspecialchars(trim($line))) . '</Display>'
+        . '<Display>' . utf8_decode(htmlspecialchars($line)) . '</Display>'
         . '</Item>';
 }
 
