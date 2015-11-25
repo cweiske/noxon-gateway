@@ -80,13 +80,16 @@ function handleRequest($path)
         return;
     }
 
+    $ext = pathinfo($path, PATHINFO_EXTENSION);
     if (is_dir($fullPath)) {
         sendDir($path);
-    } else if (substr($path, -4) == '.url') {
+    } else if ($ext == 'url') {
         require_once 'podcasts.php';
         sendPodcast($path);
-    } else if (substr($path, -4) == '.txt') {
+    } else if ($ext == 'txt') {
         sendTextFile($path);
+    } else if ($ext == 'sh') {
+        sendScript($path);
     } else {
         sendMessage('Unknown file type');
     }
@@ -108,23 +111,51 @@ function sendDir($path)
     $count = 0;
     foreach ($entries as $entry) {
         $urlPath = pathEncode(substr($entry, strlen($varDir)));
+        $ext = pathinfo($entry, PATHINFO_EXTENSION);
         if (is_dir($entry)) {
             ++$count;
             $listItems[] = getDirItem(basename($entry), $urlPath . '/');
-        } else if (substr($entry, -4) == '.url') {
+        } else if ($ext == 'url') {
             //podcast
             ++$count;
             $listItems[] = getPodcastItem(basename($entry, '.url'), $urlPath);
-        } else if (substr($entry, -4) == '.txt') {
+        } else if (substr($entry, -8) == '.auto.sh') {
+            //automatically execute script while listing this directory
+            addScriptOutput($listItems, $entry);
+        } else if ($ext == 'txt' || $ext == 'sh') {
             //plain text file
             ++$count;
-            $listItems[] = getDirItem(basename($entry, '.txt'), $urlPath);
+            $listItems[] = getDirItem(basename($entry, '.' . $ext), $urlPath);
         }
     }
     if (!$count) {
         $listItems[] = getMessageItem('No files or folders');
     }
     sendListItems($listItems);
+}
+
+function sendScript($path)
+{
+    global $varDir;
+
+    $listItems = array();
+    addPreviousItem($listItems, $path);
+
+    $fullPath = $varDir . $path;
+    addScriptOutput($listItems, $fullPath);
+    sendListItems($listItems);
+}
+
+function addScriptOutput(&$listItems, $fullPath)
+{
+    exec($fullPath . ' 2>&1', $output, $retVal);
+
+    if ($retVal == 0) {
+        addTextLines($listItems, $output);
+    } else {
+        $listItems[] = getMessageItem('Error executing script');
+        addTextLines($listItems, $output);
+    }
 }
 
 function sendTextFile($path)
@@ -134,13 +165,18 @@ function sendTextFile($path)
     addPreviousItem($listItems, $path);
 
     $lines = file($varDir . $path);
+    addTextLines($listItems, $lines);
+    sendListItems($listItems);
+}
+
+function addTextLines(&$listItems, $lines)
+{
     foreach ($lines as $line) {
         $line = trim($line);
         if ($line != '') {
             $listItems[] = getDisplayItem($line);
         }
     }
-    sendListItems($listItems);
 }
 
 function getDisplayItem($line)
