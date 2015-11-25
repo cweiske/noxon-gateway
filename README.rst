@@ -62,6 +62,30 @@ Directory
 File extensions get removed for display purposes.
 
 
+Sorting
+=======
+Files and directory are sorted alphabetically and get listed
+in this order.
+
+You can prefix your files and directories with ``[0-9]+_``,
+which lets you influence sorting and gets removed in the
+listings.
+
+Consider the following files::
+
+    01_temp.auto.sh
+    02_warmer.sh
+    03_colder.sh
+
+Would render as::
+
+    Temperature: 23°C
+    warmer
+    colder
+
+(given that ``01_temp.auto.sh`` outputs the temperature string)
+
+
 =====
 Setup
 =====

@@ -112,20 +112,23 @@ function sendDir($path)
     foreach ($entries as $entry) {
         $urlPath = pathEncode(substr($entry, strlen($varDir)));
         $ext = pathinfo($entry, PATHINFO_EXTENSION);
+
+        $titleBase = basename($entry);
+        $titleBase = preg_replace('#^[0-9]+_#', '', $titleBase);
         if (is_dir($entry)) {
             ++$count;
-            $listItems[] = getDirItem(basename($entry), $urlPath . '/');
+            $listItems[] = getDirItem($titleBase, $urlPath . '/');
         } else if ($ext == 'url') {
             //podcast
             ++$count;
-            $listItems[] = getPodcastItem(basename($entry, '.url'), $urlPath);
+            $listItems[] = getPodcastItem(basename($titleBase, '.url'), $urlPath);
         } else if (substr($entry, -8) == '.auto.sh') {
             //automatically execute script while listing this directory
             addScriptOutput($listItems, $entry);
         } else if ($ext == 'txt' || $ext == 'sh') {
             //plain text file
             ++$count;
-            $listItems[] = getDirItem(basename($entry, '.' . $ext), $urlPath);
+            $listItems[] = getDirItem(basename($titleBase, '.' . $ext), $urlPath);
         }
     }
     if (!$count) {
