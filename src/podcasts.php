@@ -30,7 +30,7 @@ function sendPodcast($path)
 
         $listItems[] = getEpisodeItem(
             $title,
-            $host1 . 'play-url?url=' . urlencode($url),
+            $host1 . 'deredirect.php?url=' . urlencode($url),
             $desc,
             'MP3'
         );

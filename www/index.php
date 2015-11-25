@@ -41,14 +41,6 @@ if (strtolower($fullUri) == '/setupapp/radio567/asp/browsexpa/loginxml.asp?token
 } else if ($path == '/RadioNativeFavorites.php') {
     //Favorites, defined via web interface
     sendMessage('Unsupported');
-} else if (substr($path, 0, 9) == '/play-url') {
-    //play a given URL, but first follow all redirects
-    //noxon iRadio Cube does not like too many redirections
-    // 3 redirects did not work.
-    $url = $_GET['url'];
-    header('HTTP/1.0 301 Moved Permanently');
-    header('Location: ' . getFinalUrl($url));
-    exit();
 }
 
 handleRequest(ltrim($path, '/'));
@@ -242,19 +234,6 @@ function addPreviousItem(&$listItems, $urlPath)
         return;
     }
     $listItems[] = getPreviousItem($parentDir);
-}
-
-function getFinalUrl($url)
-{
-    $ctx = stream_context_set_default(
-        array('http' => array('method' => 'HEAD'))
-    );
-    //get_headers follows redirects automatically
-    $headers = get_headers($url, 1);
-    if ($headers !== false && isset($headers['Location'])) {
-        return end($headers['Location']);
-    }
-    return $url;
 }
 
 function sendMessage($msg)
