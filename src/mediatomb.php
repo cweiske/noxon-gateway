@@ -8,7 +8,7 @@ function handleRequestMediatomb($fullPath, $prefix)
     extract($mediatomb);
     $smt = new Services_MediaTomb($user, $pass, $host, $port);
 
-    $path = substr($fullPath, strlen($prefix));
+    $path = substr(urldecode($fullPath), strlen($prefix));
     $container = $smt->getContainerByPath($path);
     $listItems = array();
     addPreviousItem($listItems, $fullPath);
@@ -16,7 +16,7 @@ function handleRequestMediatomb($fullPath, $prefix)
     foreach ($container->getContainers() as $subContainer) {
         $listItems[] = getDirItem(
             $subContainer->title,
-            $fullPath . $subContainer->title . '/'
+            $fullPath . urlencode($subContainer->title) . '/'
         );
     }
 
