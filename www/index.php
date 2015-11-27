@@ -243,7 +243,7 @@ function sendListItems($listItems)
     }
     $xml .= "</ListOfItems>\n";
 
-    header('Content-type: text/xml');
+    header('Content-type: text/xml; charset=iso-8859-1');
     echo $xml;
 }
 ?>
