@@ -58,7 +58,7 @@ directory ``Cast News`` that contains all podcast episodes.
 
 
 Single file mode
-----------------
+================
 Your kid only wants to listen to this one single story before sleeping.
 You start it, set the 15 minute sleep timer and leave the room.
 
