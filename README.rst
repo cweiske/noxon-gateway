@@ -1,19 +1,92 @@
 ********************
 Noxon iRadio gateway
 ********************
-Push your own content onto Noxon iRadio devices:
+Push your own content onto `Noxon iRadio`__ devices:
 RSS feeds, text files and MediaTomb server structures.
 
 This tool makes it possible to push own data into the menu
-entries
+entries "Internet Radio", "Podcasts" and "My Noxon" without relying
+on the official Terratec servers.
 
-- Internet Radio
-- Podcasts
-- My Noxon
+__ http://www.noxonradio.de/
+
+
+.. contents::
+
+
+========
+Features
+========
+- Customize the Noxon iRadio menus "Internet Radio", "Podcasts" and "My Noxon"
+- Show Mediatomb UPnP server content in "Internet Radio", so that you
+  don't have to restart your iRadio because it does not find the UPnP server
+  after a day of standby
+- Display text files and run shell scripts from the menu (home automation)
+- Podcast RSS feed support
+- Discoverable with your web browser
+- Transcoding of non-mp3 file types to ``.mp3`` that iRadios can play
+
+
+RSS feed support
+================
+Simpy write a podcast's mp3 RSS feed URL into a  ``.url`` file in
+the ``var/`` directory structure, and your radio will show you a
+folder with all episodes.
+Enter an episode to play it.
+
+The Noxon iRadios do only allow a single HTTP redirect when they access a URL
+to play, but many podcast feeds send you for tracking purposes through 3 or
+more redirects until you reach the final mp3 URL.
+
+noxon-gateway resolves the redirections for the iRadio, so that this will
+not be a problem.
+
+
+Creating an RSS feed
+--------------------
+You have to know the URL to the podcast's mp3 RSS feed, e.g.
+``http://cast.example.org/news.rss``.
+
+Create a file ``Cast News.url`` in ``var/podcasts/`` and write the RSS URL
+into it.
+That's all.
+
+When accessing the "Podcasts" menu from your noxon iRadio, you'll see a
+directory ``Cast News`` that contains all podcast episodes.
+
+
+Supported radios
+================
+This is the list of iRadios known to work with ``noxon-gateway``:
+
+- `Noxon iRadio`__ (original white version)
+- `Noxon iRadio cube`__
+
+Others should work.
+If you know of unlisted radios that do work with this tool, please tell me.
+
+__ http://ftp.noxonradio.de/index.php?dir=NOXON%2FNOXON_iRadio%2F
+__ http://ftp.noxonradio.de/index.php?dir=NOXON%2FNOXON_iRadio_Cube%2F
+
+
+Web browser support
+===================
+You can discover the noxon-gateway contents with your web browser.
+Point your browser to the gateway's domain and start browsing:
+
+.. image:: docs/screenshots/browsing.png
+
+This works because the XML files delivered by noxon-gateway contain the
+link to an XSLT__ file that converts the XML structure to HTML that
+browsers understand.
+
+Works at least with Firefox 42 and Chromium 45.
+
+__ http://www.w3.org/TR/xslt
 
 
 ===================================
-Customizung the directory structure
+Customizing the directory structure
 ===================================
 The ``var/`` directory contains three directories you can fill with
 your own content.
@@ -100,10 +173,31 @@ by this tool::
     gatekeeper.my-noxon.net
 
 
+Configure this in your router or the DNS server your iRadio devices use.
+
+
 MediaTomb
 =========
 To be able to browse a MediaTomb server, copy ``data/config.php.dist`` to
 ``data/config.php`` and fill it with mediatomb web interface credentials.
+
+You also have to install the `Services_Mediatomb`__ library via `PEAR`__::
+
+    $ pear channel-discover zustellzentrum.cweiske.de
+    $ pear install zz/services_mediatomb-alpha
+
+__ http://zustellzentrum.cweiske.de/index.php?package=Services_MediaTomb
+__ http://pear.php.net/
+
+
+Transcoding
+===========
+If you have non-mp3 files in your audio collection, install `ffmpeg`__
+on the noxon-gateway server.
+Transcoding will start automatically when the player accesses a file
+that is not in ``audio/mpeg`` format.
+
+__ http://ffmpeg.org/
 
 
 =======
