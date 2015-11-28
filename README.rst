@@ -200,7 +200,16 @@ that is not in ``audio/mpeg`` format.
 __ http://ffmpeg.org/
 
 
-=======
+===================
+About noxon-gateway
+===================
+
+Homepage
+========
+The source code is available at http://git.cweiske.de/noxon-gateway.git/
+and mirrored at https://github.com/cweiske/noxon-gateway.
+
+
 License
 =======
 This application is available under the `AGPL v3`__ or later.
@@ -208,7 +217,6 @@ This application is available under the `AGPL v3`__ or later.
 __ http://www.gnu.org/licenses/agpl.html
 
 
-======
 Author
 ======
 Written by `Christian Weiske`__, cweiske@cweiske.de
