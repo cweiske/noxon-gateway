@@ -5,6 +5,9 @@ $mediatomb = array(
     'user' => 'fixme',
     'pass' => 'fixme',
     'host' => 'fixme',
-    'port' => '49152'
+    'port' => '49152',
+    'singleFileDirectories' => array(
+        'internetradio/Kindergeschichten/'
+    ),
 );
 ?>

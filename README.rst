@@ -25,6 +25,8 @@ Features
 - Podcast RSS feed support
 - Discoverable with your web browser
 - Transcoding of non-mp3 file types to ``.mp3`` that iRadios can play
+- Single file mode for children that want to listen to a single story
+  before sleeping
 
 
 RSS feed support
@@ -53,6 +55,25 @@ That's all.
 
 When accessing the "Podcasts" menu from your noxon iRadio, you'll see a
 directory ``Cast News`` that contains all podcast episodes.
+
+
+Single file mode
+----------------
+Your kid only wants to listen to this one single story before sleeping.
+You start it, set the 15 minute sleep timer and leave the room.
+
+After 15 minutes the child comes out and complains that the radio switched
+off within the second story and it wants to hear it to the end.
+
+To get around such issues, you can enable "single file directories"
+for certain folders.
+
+Each folder with audio files within this configured paths have a special
+directory "Einzeln" (single), which have separate folders for each audio
+file. Each of this separate folders only have the single audio file in them.
+
+When playing this file, the iRadio will stop playing after the one file
+is over.
 
 
 Supported radios

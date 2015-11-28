@@ -41,7 +41,7 @@ function mediatombBrowse(Services_MediaTomb $smt, $fullPath, $prefix)
         if ($enableSingle) {
             $listItems[] = getDirItem(
                 'Einzeln',
-                '.mt-single/' . $path
+                pathEncode('.mt-single/' . $path)
             );
         }
     }
@@ -106,17 +106,17 @@ function mediatombSingle(Services_MediaTomb $smt, $fullPath, $prefix)
 
     if ($fileMode) {
         //show single file to play
-        addPreviousItem($listItems, $fullPath);
+        addPreviousItem($listItems, pathEncode($fullPath));
         $item = $smt->getSingleItem($container, $fileTitle, false);
         mediatombAddFile($listItems, $item);
     } else {
-        addPreviousItem($listItems, 'internetradio/' . $path . '/dummy');
+        addPreviousItem($listItems, pathEncode('internetradio/' . $path . '/dummy'));
 
         //browse directory
         foreach ($container->getItemIterator(false) as $item) {
             $listItems[] = getDirItem(
                 $item->title,
-                $fullPath . 'file-' . $item->title
+                pathEncode($fullPath . 'file-' . $item->title)
             );
         }
     }
