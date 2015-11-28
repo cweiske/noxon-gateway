@@ -37,7 +37,11 @@ function handleRequest($path)
 
     if (substr($path, 0, 14) == 'internetradio/') {
         require_once 'mediatomb.php';
-        handleRequestMediatomb($path, 'internetradio/');
+        handleMediatomb('browse', $path, 'internetradio/');
+        return;
+    } else if (substr($path, 0, 11) == '.mt-single/') {
+        require_once 'mediatomb.php';
+        handleMediatomb('single', $path, '.mt-single/');
         return;
     }
 
