@@ -60,7 +60,7 @@ function handleRequest($path)
         sendPodcast($path);
     } else if ($ext == 'txt') {
         sendTextFile($path);
-    } else if ($ext == 'sh') {
+    } else if (is_executable($fullPath)) {
         sendScript($path);
     } else {
         sendMessage('Unknown file type');
@@ -94,10 +94,12 @@ function sendDir($path)
             //podcast
             ++$count;
             $listItems[] = getPodcastItem(basename($titleBase, '.url'), $urlPath);
-        } else if (substr($entry, -8) == '.auto.sh') {
+        } else if (is_executable($entry)
+            && strpos(basename($entry), '.auto') !== false
+        ) {
             //automatically execute script while listing this directory
             addScriptOutput($listItems, $entry);
-        } else if ($ext == 'txt' || $ext == 'sh') {
+        } else if ($ext == 'txt' || is_executable($entry)) {
             //plain text file
             ++$count;
             $listItems[] = getDirItem(basename($titleBase, '.' . $ext), $urlPath);

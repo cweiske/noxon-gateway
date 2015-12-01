@@ -132,26 +132,26 @@ File types
 ==========
 Directory
   A directory is browsable by your Noxon radio
-``.sh`` file
-  Shell script which is shown as directory and which gets executed
-  when navigating into it.
-  Output is shown as it is for ``.txt`` files.
-
-  I use it to control my house's heating system from the radio.
-``.auto.sh``
-  Shell script which gets executed when browsing the folder.
-  The output is integrated into the directory listing with the same
-  rules as for ``.txt`` files.
-
-  You can use this to show the current time within the directory listing.
 ``.txt`` file
-  Text files are rendered as un-actionable lists.
+  Text files are rendered as un-actionable lists, one list item per line.
 
   Empty lines get removed, consecutive spaces get collapsed.
 ``.url`` file
   Podcast feed URL file.
 
   Simply contains the URL to the podcast's MP3 RSS feed.
+executable file
+  Script is shown as directory and gets executed when navigating
+  into it.
+  Output is shown as it is for ``.txt`` files.
+
+  I use it to control my house's heating system from the radio.
+``*.auto*`` (executable)
+  Script gets executed when browsing the folder.
+  The output is integrated into the directory listing with the same
+  rules as for ``.txt`` files.
+
+  You can use this to show the current time within the directory listing.
 
 File extensions get removed for display purposes.
 
