@@ -161,7 +161,7 @@ function getDisplayItem($line)
     $line = preg_replace('#\s+#', ' ', $line);
     return '<Item>'
         . '<ItemType>Display</ItemType>'
-        . '<Display>' . utf8_decode(htmlspecialchars($line)) . '</Display>'
+        . '<Display>' . nox_esc($line) . '</Display>'
         . '</Item>';
 }
 
@@ -170,9 +170,9 @@ function getDirItem($title, $urlPath)
     global $host1, $host2;
     return '<Item>'
         . '<ItemType>Dir</ItemType>'
-        . '<Title>' . utf8_decode(htmlspecialchars($title)) . '</Title>'
-        . '<UrlDir>' . $host1 . utf8_decode(htmlspecialchars($urlPath)) . '</UrlDir>'
-        . '<UrlDirBackUp>' . $host2 . utf8_decode(htmlspecialchars($urlPath)) . '</UrlDirBackUp>'
+        . '<Title>' . nox_esc($title) . '</Title>'
+        . '<UrlDir>' . $host1 . nox_esc($urlPath) . '</UrlDir>'
+        . '<UrlDirBackUp>' . $host2 . nox_esc($urlPath) . '</UrlDirBackUp>'
         . '</Item>';
 }
 
@@ -180,9 +180,9 @@ function getEpisodeItem($title, $fullUrl, $desc, $type)
 {
     return '<Item>'
         . '<ItemType>ShowEpisode</ItemType>'
-        . '<ShowEpisodeName>' . utf8_decode(htmlspecialchars($title)) . '</ShowEpisodeName>'
+        . '<ShowEpisodeName>' . nox_esc($title) . '</ShowEpisodeName>'
         . '<ShowEpisodeURL>' . htmlspecialchars($fullUrl) . '</ShowEpisodeURL>'
-        . '<ShowDesc>' . utf8_decode(htmlspecialchars($desc)) . '</ShowDesc>'
+        . '<ShowDesc>' . nox_esc($desc) . '</ShowDesc>'
         . '<ShowMime>' . $type . '</ShowMime>'
         . '</Item>';
 }
@@ -192,8 +192,8 @@ function getPodcastItem($title, $urlPath)
     global $host1;
     return '<Item>'
         . '<ItemType>ShowOnDemand</ItemType>'
-        . '<ShowOnDemandName>' . utf8_decode(htmlspecialchars($title)) . '</ShowOnDemandName>'
-        . '<ShowOnDemandURL>' . $host1 . utf8_decode(htmlspecialchars($urlPath)) . '</ShowOnDemandURL>'
+        . '<ShowOnDemandName>' . nox_esc($title) . '</ShowOnDemandName>'
+        . '<ShowOnDemandURL>' . $host1 . nox_esc($urlPath) . '</ShowOnDemandURL>'
         . '</Item>';
 }
 
@@ -201,7 +201,7 @@ function getMessageItem($msg)
 {
     return '<Item>'
         . '<ItemType>Message</ItemType>'
-        . '<Message>' . utf8_decode(htmlspecialchars($msg)) . '</Message>'
+        . '<Message>' . nox_esc($msg) . '</Message>'
         . '</Item>';
 }
 
@@ -210,8 +210,8 @@ function getPreviousItem($urlPath)
     global $host1, $host2;
     return '<Item>'
         . '<ItemType>Previous</ItemType>'
-        . '<UrlPrevious>' . $host1 . utf8_decode(htmlspecialchars($urlPath)) . '</UrlPrevious>'
-        . '<UrlPreviousBackUp>' . $host1 . utf8_decode(htmlspecialchars($urlPath)) . '</UrlPreviousBackUp>'
+        . '<UrlPrevious>' . $host1 . nox_esc($urlPath) . '</UrlPrevious>'
+        . '<UrlPreviousBackUp>' . $host1 . nox_esc($urlPath) . '</UrlPreviousBackUp>'
         . '</Item>';
 }
 
@@ -222,6 +222,11 @@ function addPreviousItem(&$listItems, $urlPath)
         return;
     }
     $listItems[] = getPreviousItem($parentDir);
+}
+
+function nox_esc($string)
+{
+    return utf8_decode(htmlspecialchars($string));
 }
 
 function sendMessage($msg)
