@@ -26,7 +26,6 @@ function mediatombBrowse(Services_MediaTomb $smt, $fullPath, $prefix)
     $path = substr($fullPath, strlen($prefix));
     $container = $smt->getContainerByPath($path);
     $listItems = array();
-    addPreviousItem($listItems, $fullPath);
 
     $it = $container->getItemIterator(false);
     $it->rewind();
@@ -57,7 +56,7 @@ function mediatombBrowse(Services_MediaTomb $smt, $fullPath, $prefix)
         mediatombAddFile($listItems, $item);
     }
 
-    sendListItems($listItems);
+    sendListItems($listItems, buildPreviousItem($fullPath));
 }
 
 function mediatombAddFile(&$listItems, $item)
@@ -104,13 +103,14 @@ function mediatombSingle(Services_MediaTomb $smt, $fullPath, $prefix)
     $container = $smt->getContainerByPath($path);
     $listItems = array();
 
+    $previous = null;
     if ($fileMode) {
         //show single file to play
-        addPreviousItem($listItems, pathEncode($fullPath));
+        $previous = buildPreviousItem(pathEncode($fullPath));
         $item = $smt->getSingleItem($container, $fileTitle, false);
         mediatombAddFile($listItems, $item);
     } else {
-        addPreviousItem($listItems, pathEncode('internetradio/' . $path . '/dummy'));
+        $previous = buildPreviousItem(pathEncode('internetradio/' . $path . '/dummy'));
 
         //browse directory
         foreach ($container->getItemIterator(false) as $item) {
@@ -121,6 +121,6 @@ function mediatombSingle(Services_MediaTomb $smt, $fullPath, $prefix)
         }
     }
 
-    sendListItems($listItems);
+    sendListItems($listItems, $previous);
 }
 ?>

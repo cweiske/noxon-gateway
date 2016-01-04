@@ -21,7 +21,6 @@ function sendPodcast($path)
     
     $sx = simplexml_load_file($cacheFile);
     $listItems = array();
-    addPreviousItem($listItems, $path);
 
     foreach ($sx->channel->item as $item) {
         $title = (string) $item->title;
@@ -35,7 +34,7 @@ function sendPodcast($path)
             'MP3'
         );
     }
-    sendListItems($listItems);
+    sendListItems($listItems, buildPreviousItem($path));
 }
 
 

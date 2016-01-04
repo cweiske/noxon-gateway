@@ -27,6 +27,7 @@ Features
 - Transcoding of non-mp3 file types to ``.mp3`` that iRadios can play
 - Single file mode for children that want to listen to a single story
   before sleeping
+- Paging results with ``?startitems=1&enditems=10`` GET parameters
 
 
 RSS feed support

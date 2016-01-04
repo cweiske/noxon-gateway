@@ -2,7 +2,7 @@
 require_once __DIR__ . '/../src/header.php';
 
 if (strtolower($fullUri) == '/setupapp/radio567/asp/browsexpa/loginxml.asp?token=0'
-    || $fullUri == '/RadioNativeLogin.php'
+    || $fullUri == '/RadioNativeLogin.phpb'
 ) {
     //initial login for "internet radio", podcasts and "my noxon"
     header('Content-type: text/html');
@@ -77,7 +77,7 @@ function sendDir($path)
     global $varDir;
 
     $listItems = array();
-    addPreviousItem($listItems, $path);
+    $enablePaging = true;
 
     $entries = glob(str_replace('//', '/', $varDir . rtrim($path, '/') . '/*'));
     $count = 0;
@@ -99,6 +99,7 @@ function sendDir($path)
         ) {
             //automatically execute script while listing this directory
             addScriptOutput($listItems, $entry);
+            $enablePaging = false;
         } else if ($ext == 'txt' || is_executable($entry)) {
             //plain text file
             ++$count;
@@ -108,7 +109,7 @@ function sendDir($path)
     if (!$count) {
         $listItems[] = getMessageItem('No files or folders');
     }
-    sendListItems($listItems);
+    sendListItems($listItems, buildPreviousItem($path), $enablePaging);
 }
 
 function sendScript($path)
@@ -116,11 +117,10 @@ function sendScript($path)
     global $varDir;
 
     $listItems = array();
-    addPreviousItem($listItems, $path);
 
     $fullPath = $varDir . $path;
     addScriptOutput($listItems, $fullPath);
-    sendListItems($listItems);
+    sendListItems($listItems, buildPreviousItem($path), false);
 }
 
 function addScriptOutput(&$listItems, $fullPath)
@@ -139,11 +139,10 @@ function sendTextFile($path)
 {
     global $varDir;
     $listItems = array();
-    addPreviousItem($listItems, $path);
 
     $lines = file($varDir . $path);
     addTextLines($listItems, $lines);
-    sendListItems($listItems);
+    sendListItems($listItems, buildPreviousItem($path));
 }
 
 function addTextLines(&$listItems, $lines)
@@ -215,13 +214,13 @@ function getPreviousItem($urlPath)
         . '</Item>';
 }
 
-function addPreviousItem(&$listItems, $urlPath)
+function buildPreviousItem($urlPath)
 {
     $parentDir = dirname($urlPath) . '/';
     if ($parentDir == '/') {
-        return;
+        return null;
     }
-    $listItems[] = getPreviousItem($parentDir);
+    return getPreviousItem($parentDir);
 }
 
 function nox_esc($string)
@@ -234,23 +233,38 @@ function sendMessage($msg)
     sendListItems(array(getMessageItem($msg)));
 }
 
-function sendListItems($listItems)
+function sendListItems($listItems, $previous = null, $enablePaging = true)
 {
     $startitems = 1;
-    $enditems = 10;
+    $enditems   = 100000;
     if (isset($_GET['startitems'])) {
         $startitems = (int) $_GET['startitems'];
     }
     if (isset($_GET['enditems'])) {
         $enditems = (int) $_GET['enditems'];
     }
-    //TODO: limit list
+
+    if ($enablePaging) {
+        $itemCount = count($listItems);
+    } else {
+        $itemCount = -1;
+    }
+    if ($previous !== null) {
+        $previous .= "\n";
+    }
 
     $xml = '<?xml version="1.0" encoding="iso-8859-1"?>' . "\n";
     $xml .= '<?xml-stylesheet type="text/xsl" href="/html.xsl"?>' . "\n";
     $xml .= '<ListOfItems>' . "\n";
+    $xml .= '<ItemCount>' . $itemCount . '</ItemCount>' . "\n";
+    $xml .= $previous;
+
+    $num = 0;
     foreach ($listItems as $item) {
-        $xml .= $item . "\n";
+        ++$num;
+        if (!$enablePaging || ($num >= $startitems && $num <= $enditems)) {
+            $xml .= $item . "\n";
+        }
     }
     $xml .= "</ListOfItems>\n";
 
