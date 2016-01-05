@@ -81,6 +81,7 @@ function sendDir($path)
 
     $entries = glob(str_replace('//', '/', $varDir . rtrim($path, '/') . '/*'));
     $count = 0;
+    $noCache = false;
     foreach ($entries as $entry) {
         $urlPath = pathEncode(substr($entry, strlen($varDir)));
         $ext = pathinfo($entry, PATHINFO_EXTENSION);
@@ -104,12 +105,17 @@ function sendDir($path)
             //plain text file
             ++$count;
             $listItems[] = getDirItem(basename($titleBase, '.' . $ext), $urlPath);
+        } else  if (basename($entry) == 'nocache') {
+            $noCache = true;
         }
     }
     if (!$count) {
         $listItems[] = getMessageItem('No files or folders');
     }
-    sendListItems($listItems, buildPreviousItem($path), $enablePaging);
+    sendListItems(
+        $listItems, buildPreviousItem($path),
+        $enablePaging, $noCache
+    );
 }
 
 function sendScript($path)
@@ -233,8 +239,9 @@ function sendMessage($msg)
     sendListItems(array(getMessageItem($msg)));
 }
 
-function sendListItems($listItems, $previous = null, $enablePaging = true)
-{
+function sendListItems(
+    $listItems, $previous = null, $enablePaging = true, $noCache = false
+) {
     $startitems = 1;
     $enditems   = 100000;
     if (isset($_GET['startitems'])) {
@@ -256,6 +263,9 @@ function sendListItems($listItems, $previous = null, $enablePaging = true)
     $xml = '<?xml version="1.0" encoding="iso-8859-1"?>' . "\n";
     $xml .= '<?xml-stylesheet type="text/xsl" href="/html.xsl"?>' . "\n";
     $xml .= '<ListOfItems>' . "\n";
+    if ($noCache) {
+        $xml .= "<NoCache>1</NoCache>\n";
+    }
     $xml .= '<ItemCount>' . $itemCount . '</ItemCount>' . "\n";
     $xml .= $previous;
 

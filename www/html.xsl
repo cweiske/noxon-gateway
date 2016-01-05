@@ -16,6 +16,10 @@
         </pre>
        </xsl:for-each>
 
+       <xsl:if test="NoCache">
+        <p>Caching disabled by <tt>NoCache</tt></p>
+       </xsl:if>
+
        <xsl:if test="Item[ItemType='Message']">
         <h2>Messages</h2>
         <xsl:for-each select="Item[ItemType='Message']">

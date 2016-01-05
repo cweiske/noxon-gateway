@@ -153,6 +153,8 @@ executable file
   rules as for ``.txt`` files.
 
   You can use this to show the current time within the directory listing.
+``nocache``
+  Disables menu caching.
 
 File extensions get removed for display purposes.
 
@@ -179,6 +181,18 @@ Would render as::
     colder
 
 (given that ``01_temp.auto.sh`` outputs the temperature string)
+
+
+Caching
+=======
+When going back in the menu strucutre with the left arrow button,
+Noxon iRadios display a cached version of the menu.
+
+If you do not want this - because a script modified values that are
+displayed in the parent menu, or because the script that displays
+the time should always be run - you may disable caching.
+
+Caching is disabled when a file named ``nocache`` is found in the directory.
 
 
 =====
