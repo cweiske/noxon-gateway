@@ -242,6 +242,8 @@ About noxon-gateway
 
 Homepage
 ========
+``noxon-gateway`` lives at http://cweiske.de/noxon-gateway.htm
+
 The source code is available at http://git.cweiske.de/noxon-gateway.git/
 and mirrored at https://github.com/cweiske/noxon-gateway.
 
