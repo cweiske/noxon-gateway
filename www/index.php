@@ -2,7 +2,7 @@
 require_once __DIR__ . '/../src/header.php';
 
 if (strtolower($fullUri) == '/setupapp/radio567/asp/browsexpa/loginxml.asp?token=0'
-    || $fullUri == '/RadioNativeLogin.phpb'
+    || $fullUri == '/RadioNativeLogin.php'
 ) {
     //initial login for "internet radio", podcasts and "my noxon"
     header('Content-type: text/html');
