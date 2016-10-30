@@ -4,6 +4,9 @@
   xmlns="http://www.w3.org/1999/xhtml">
   <xsl:template match="ListOfItems">
     <html>
+      <head>
+       <meta name="viewport" content="width=device-width, initial-scale=1"/>
+      </head>
       <body>
        <xsl:for-each select="Item[ItemType='Previous']">
         <pre>
