@@ -10,4 +10,12 @@ $mediatomb = array(
         'internetradio/Kindergeschichten/'
     ),
 );
+
+//MIME types in addition to MP3 files that the clients
+//support (and do not need transcoding for)
+$clientSupport = [
+    '127.0.0.1' => [
+        'audio/ogg' => true,
+    ],
+];
 ?>

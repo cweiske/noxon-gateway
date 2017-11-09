@@ -65,7 +65,8 @@ function mediatombAddFile(&$listItems, $item)
 
     $di = $item->getDetailedItem();
     $itemUrl = $item->url;
-    if ($di->mimetype !== 'audio/mpeg') {
+    if (!clientSupportsType($di->mimetype)) {
+        //client wants transcoded file
         //noxon iRadio cube does not want to play .ogg files
         $itemUrl = $host1 . 'transcode-nocache.php'
             . '?url=' . urlencode($itemUrl);
@@ -76,6 +77,20 @@ function mediatombAddFile(&$listItems, $item)
         '',
         'MP3'
     );
+}
+
+function clientSupportsType($mimetype)
+{
+    if ($mimetype === 'audio/mpeg') {
+        return true;
+    }
+    $ip = $_SERVER['REMOTE_ADDR'];
+    if (isset($GLOBALS['clientSupport'][$ip][$mimetype])
+        && $GLOBALS['clientSupport'][$ip][$mimetype] === true
+    ) {
+        return true;
+    }
+    return false;
 }
 
 /**
