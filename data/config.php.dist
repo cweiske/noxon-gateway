@@ -18,4 +18,9 @@ $clientSupport = [
         'audio/ogg' => true,
     ],
 ];
+
+//if this is set, transcode caching is activated
+$cacheDir = null;
+//http-accessible cache dir URL
+$cacheDirUrl = null;
 ?>

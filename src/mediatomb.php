@@ -68,8 +68,13 @@ function mediatombAddFile(&$listItems, $item)
     if (!clientSupportsType($di->mimetype)) {
         //client wants transcoded file
         //noxon iRadio cube does not want to play .ogg files
-        $itemUrl = $host1 . 'transcode-nocache.php'
-            . '?url=' . urlencode($itemUrl);
+        if (isset($GLOBALS['cacheDir']) && $GLOBALS['cacheDir'] != '') {
+            $itemUrl = $host1 . 'transcode-cache.php'
+                . '?url=' . urlencode($itemUrl);
+        } else {
+            $itemUrl = $host1 . 'transcode-nocache.php'
+                . '?url=' . urlencode($itemUrl);
+        }
     }
     $listItems[] = getEpisodeItem(
         $item->title,
