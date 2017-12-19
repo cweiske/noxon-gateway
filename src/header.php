@@ -1,10 +1,9 @@
 <?php
 set_include_path(get_include_path() . PATH_SEPARATOR . __DIR__ . '/../src/');
-$path = $fullUri = urldecode($_SERVER['REQUEST_URI']);//with query string
-$qPos = strpos($fullUri, '?');
-if ($qPos !== false) {
-    $path = substr($fullUri, 0, $qPos);
-}
+
+$requestUriNoQuery = explode('?', $_SERVER['REQUEST_URI'])[0];
+$path = $fullUri = urldecode($requestUriNoQuery);
+
 $dataDir = __DIR__ . '/../data/';
 $varDir  = realpath(__DIR__ . '/../var') . '/';
 $cacheDir = __DIR__ . '/../www/cache/';
