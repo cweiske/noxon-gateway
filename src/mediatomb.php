@@ -25,6 +25,11 @@ function mediatombBrowse(Services_MediaTomb $smt, $fullPath, $prefix)
 
     $path = substr($fullPath, strlen($prefix));
     $container = $smt->getContainerByPath($path);
+    if ($container === null) {
+        sendMessage('Error accessing ' . $fullPath);
+        return;
+    }
+
     $listItems = array();
 
     $it = $container->getItemIterator(false);
