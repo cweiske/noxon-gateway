@@ -30,7 +30,7 @@ handleRequest(ltrim($path, '/'));
 function handleRequest($path)
 {
     global $varDir;
-    if (strpos($path, '..') !== false) {
+    if (strpos($path, '/../') !== false) {
         sendMessage('No');
         return;
     }
