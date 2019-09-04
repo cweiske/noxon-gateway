@@ -199,6 +199,31 @@ Caching is disabled when a file named ``nocache`` is found in the directory.
 Setup
 =====
 
+Basic setup
+===========
+#. You need a web server (Apache) with PHP.
+
+   Using nginx, lighttpd or others is possible, but you need to translate
+   the redirects in the ``www/.htaccess`` file into their respective format.
+
+#. Clone the Git repository of this noxon-gateway software::
+
+     $ git clone https://git.cweiske.de/noxon-gateway.git
+
+#. Configure your network's DNS server/router, see the "Hosts" section.
+
+#. Point your web server's (virtual host) document root to the ``www``
+   directory.
+
+   Let your web server handle the domain names.
+
+#. Open http://gatekeeper.my-noxon.net/ in your browser.
+   You should see the noxon gateway software.
+
+   If your browser supports XSLT, you will not see XML, but clickable HTML
+   links.
+
+
 Hosts
 =====
 The following hosts must point to your server and be handled
