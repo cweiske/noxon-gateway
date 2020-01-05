@@ -17,7 +17,10 @@ function getFinalUrl($url)
     //get_headers follows redirects automatically
     $headers = get_headers($url, 1);
     if ($headers !== false && isset($headers['Location'])) {
-        return end($headers['Location']);
+        if (is_array($headers['Location'])) {
+            return end($headers['Location']);
+        }
+        return $headers['Location'];
     }
     return $url;
 }
