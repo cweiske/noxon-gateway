@@ -1,9 +1,11 @@
 <?php
 require_once __DIR__ . '/../src/header.php';
 
-if (strtolower($fullUri) == '/setupapp/radio567/asp/browsexpa/loginxml.asp?token=0'
-    || $fullUri == '/RadioNativeLogin.php'
-) {
+$radioPodcastLogin = isset($_GET['token']) && $_GET['token'] == '0'
+    && strtolower($path) == '/setupapp/radio567/asp/browsexpa/loginxml.asp';
+$myNoxonLogin = $path == '/RadioNativeLogin.php';
+
+if ($radioPodcastLogin || $myNoxonLogin) {
     //initial login for "internet radio", podcasts and "my noxon"
     header('Content-type: text/html');
     readfile($dataDir . 'login-camelcase.xml');

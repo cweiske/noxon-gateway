@@ -2,7 +2,7 @@
 set_include_path(get_include_path() . PATH_SEPARATOR . __DIR__ . '/../src/');
 
 $requestUriNoQuery = explode('?', $_SERVER['REQUEST_URI'])[0];
-$path = $fullUri = urldecode($requestUriNoQuery);
+$path = urldecode($requestUriNoQuery);
 
 $dataDir = __DIR__ . '/../data/';
 $varDir  = realpath(__DIR__ . '/../var') . '/';
