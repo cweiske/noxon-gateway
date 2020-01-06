@@ -1,7 +1,7 @@
 <?php
 function sendPodcast($path)
 {
-    global $varDir, $host1;
+    global $varDir, $host1, $enablePodcastProxy;
 
     $file = urldecode($path);
     if (strpos($file, '..') !== false) {
@@ -22,6 +22,11 @@ function sendPodcast($path)
     $sx = simplexml_load_file($cacheFile);
     $listItems = array();
 
+    $urlHandler = $host1 . 'deredirect.php';
+    if ($enablePodcastProxy) {
+        $urlHandler = $host1 . 'proxy.php';
+    }
+
     foreach ($sx->channel->item as $item) {
         $title = (string) $item->title;
         $desc = (string) $item->description;
@@ -29,7 +34,7 @@ function sendPodcast($path)
 
         $listItems[] = getEpisodeItem(
             $title,
-            $host1 . 'deredirect.php?url=' . urlencode($url),
+            $urlHandler . '?url=' . urlencode($url),
             $desc,
             'MP3'
         );

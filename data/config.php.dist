@@ -21,4 +21,7 @@ $clientSupport = [
 
 //if this is set, transcode caching is activated
 $enableCache = false;
+
+//if this is true, podcast URLs are proxied
+$enablePodcastProxy = false;
 ?>
